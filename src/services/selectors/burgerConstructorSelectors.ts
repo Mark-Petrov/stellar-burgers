@@ -1,9 +1,7 @@
 import { RootState } from '../store';
 
-export const selectConstructorItems = (state: RootState) => ({
-  bun: state.burgerConstructor.bun,
-  ingredients: state.burgerConstructor.ingredients
-});
+export const selectConstructorItems = (state: RootState) =>
+  state.burgerConstructor;
 
 export const selectOrderRequest = (state: RootState) =>
   state.burgerConstructor.orderRequest;

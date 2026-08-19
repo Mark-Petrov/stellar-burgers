@@ -19,7 +19,8 @@ export const Login: FC = () => {
     e.preventDefault();
     dispatch(loginUser({ email, password }))
       .unwrap()
-      .then(() => navigate(from, { replace: true }));
+      .then(() => navigate(from, { replace: true }))
+      .catch(() => {});
   };
 
   return (

@@ -1,3 +1,4 @@
+import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
 export const selectIngredients = (state: RootState) =>
@@ -9,14 +10,17 @@ export const selectIngredientsLoading = (state: RootState) =>
 export const selectIngredientsError = (state: RootState) =>
   state.ingredients.error;
 
-export const selectBuns = (state: RootState) =>
-  state.ingredients.ingredients.filter((item) => item.type === 'bun');
+export const selectBuns = createSelector([selectIngredients], (ingredients) =>
+  ingredients.filter((item) => item.type === 'bun')
+);
 
-export const selectMains = (state: RootState) =>
-  state.ingredients.ingredients.filter((item) => item.type === 'main');
+export const selectMains = createSelector([selectIngredients], (ingredients) =>
+  ingredients.filter((item) => item.type === 'main')
+);
 
-export const selectSauces = (state: RootState) =>
-  state.ingredients.ingredients.filter((item) => item.type === 'sauce');
+export const selectSauces = createSelector([selectIngredients], (ingredients) =>
+  ingredients.filter((item) => item.type === 'sauce')
+);
 
 export const selectIngredientById = (id: string) => (state: RootState) =>
   state.ingredients.ingredients.find((item) => item._id === id);
