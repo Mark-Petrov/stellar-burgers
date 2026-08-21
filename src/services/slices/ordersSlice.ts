@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getOrdersApi } from '@api';
 import { TOrder } from '@utils-types';
 
@@ -22,11 +22,7 @@ const initialState: TOrdersState = {
 const ordersSlice = createSlice({
   name: 'orders',
   initialState,
-  reducers: {
-    setUserOrders: (state, action: PayloadAction<TOrder[]>) => {
-      state.orders = action.payload;
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserOrders.pending, (state) => {
@@ -43,7 +39,5 @@ const ordersSlice = createSlice({
       });
   }
 });
-
-export const { setUserOrders } = ordersSlice.actions;
 
 export default ordersSlice.reducer;
