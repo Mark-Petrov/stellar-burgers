@@ -24,7 +24,7 @@ export const getIngredientByName = (name: string): TIngredientMock => {
   const ingredient = getIngredientsFromHar().find((item) => item.name === name);
 
   if (!ingredient) {
-    throw new Error(`Ingredient not found in HAR: ${name}`);
+    throw new Error(`Ингредиент не найден в HAR: ${name}`);
   }
 
   return ingredient;
