@@ -1,7 +1,43 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 import path from 'path';
+import { getIngredientByName } from './helpers/ingredientsFromHar';
 
 const harsDir = path.join(__dirname, 'hars');
+
+const expectIngredientNutritionInModal = async (
+  modal: Locator,
+  ingredient: {
+    calories: number;
+    proteins: number;
+    fat: number;
+    carbohydrates: number;
+  }
+) => {
+  await expect(
+    modal
+      .locator('li')
+      .filter({ hasText: 'Калории, ккал' })
+      .getByText(String(ingredient.calories))
+  ).toBeVisible();
+  await expect(
+    modal
+      .locator('li')
+      .filter({ hasText: 'Белки, г' })
+      .getByText(String(ingredient.proteins))
+  ).toBeVisible();
+  await expect(
+    modal
+      .locator('li')
+      .filter({ hasText: 'Жиры, г' })
+      .getByText(String(ingredient.fat))
+  ).toBeVisible();
+  await expect(
+    modal
+      .locator('li')
+      .filter({ hasText: 'Углеводы, г' })
+      .getByText(String(ingredient.carbohydrates))
+  ).toBeVisible();
+};
 
 const setupBackendMocks = async (page: Page, withAuth = false) => {
   await page.routeFromHAR(path.join(harsDir, 'ingredients.har'), {
@@ -46,10 +82,14 @@ test.describe('Добавление ингредиентов в конструк
     await sauce.getByRole('button', { name: 'Добавить' }).click();
 
     await expect(
-      page.getByText('Краторная булка N-200i (верх)')
+      page.locator('.constructor-element__text', {
+        hasText: 'Краторная булка N-200i (верх)'
+      })
     ).toBeVisible();
     await expect(
-      page.getByText('Краторная булка N-200i (низ)')
+      page.locator('.constructor-element__text', {
+        hasText: 'Краторная булка N-200i (низ)'
+      })
     ).toBeVisible();
     await expect(
       page.locator('.constructor-element__text', {
@@ -96,32 +136,21 @@ test.describe('Модальное окно ингредиента', () => {
   test('отображение данных ингредиента, по которому произошёл клик', async ({
     page
   }) => {
-    await page
-      .getByRole('link', { name: 'Биокотлета из марсианской Magma Bull' })
-      .click();
+    const main = getIngredientByName('Биокотлета из марсианской Magma Bull');
+    const sauce = getIngredientByName('Соус Spicy-X');
+
+    await page.getByRole('link', { name: main.name }).click();
 
     const modal = page.locator('#modals');
     await expect(modal.getByText('Детали ингредиента')).toBeVisible();
-    await expect(
-      modal.getByText('Биокотлета из марсианской Magma Bull')
-    ).toBeVisible();
-    await expect(modal.getByText('4242')).toBeVisible();
-    await expect(modal.getByText('420', { exact: true })).toBeVisible();
-    await expect(modal.getByText('142', { exact: true })).toBeVisible();
-    await expect(modal.getByText('242', { exact: true })).toBeVisible();
+    await expect(modal.getByText(main.name)).toBeVisible();
+    await expectIngredientNutritionInModal(modal, main);
 
     await modal.locator('button').click();
 
-    await page.getByRole('link', { name: 'Соус Spicy-X' }).click();
-    await expect(modal.getByText('Соус Spicy-X')).toBeVisible();
-    await expect(
-      modal.locator('li').filter({ hasText: 'Калории, ккал' }).getByText('30')
-    ).toBeVisible();
-    await expect(
-      modal.locator('li').filter({ hasText: 'Белки, г' }).getByText('30')
-    ).toBeVisible();
-    await expect(modal.getByText('20', { exact: true })).toBeVisible();
-    await expect(modal.getByText('40', { exact: true })).toBeVisible();
+    await page.getByRole('link', { name: sauce.name }).click();
+    await expect(modal.getByText(sauce.name)).toBeVisible();
+    await expectIngredientNutritionInModal(modal, sauce);
   });
 });
 
@@ -163,8 +192,9 @@ test.describe('Создание заказа', () => {
     await expect(modal.getByRole('heading', { name: '12345' })).toBeVisible();
     await expect(modal.getByText('идентификатор заказа')).toBeVisible();
 
-    await expect(page.getByText('Выберите булки').first()).toBeVisible();
-    await expect(page.getByText('Выберите начинку')).toBeVisible();
+    const constructor = page.getByTestId('burger-constructor');
+    await expect(constructor.getByText('Выберите булки').first()).toBeVisible();
+    await expect(constructor.getByText('Выберите начинку')).toBeVisible();
 
     await modal.locator('button').click();
     await expect(

@@ -1,5 +1,5 @@
 import { TIngredient } from '@utils-types';
-import reducer, { fetchIngredients } from '@slices/ingredientsSlice';
+import reducer, { fetchIngredients, initialState } from '@slices/ingredientsSlice';
 
 const mockIngredients: TIngredient[] = [
   {
@@ -29,12 +29,6 @@ const mockIngredients: TIngredient[] = [
     image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
   }
 ];
-
-const initialState = {
-  ingredients: [],
-  isLoading: false,
-  error: null
-};
 
 describe('ingredients reducer', () => {
   test('должен вернуть начальное состояние при undefined state и неизвестном экшене', () => {

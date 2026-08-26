@@ -7,6 +7,7 @@ import reducer, {
   addIngredient,
   closeOrderModal,
   createOrder,
+  initialState,
   moveIngredient,
   removeIngredient
 } from '@slices/burgerConstructorSlice';
@@ -64,13 +65,6 @@ const mockOrderResponse = {
   }
 };
 
-const initialState = {
-  bun: null,
-  ingredients: [],
-  orderRequest: false,
-  orderModalData: null
-};
-
 describe('burgerConstructor reducer', () => {
   test('должен вернуть начальное состояние при undefined state и неизвестном экшене', () => {
     expect(reducer(undefined, { type: 'UNKNOWN' })).toEqual(initialState);
@@ -99,7 +93,7 @@ describe('burgerConstructor reducer', () => {
     expect(state.ingredients).toEqual([]);
   });
 
-  test('должен обработать moveIngredient', () => {
+  test('должен обработать moveIngredient вверх', () => {
     const secondMain: TConstructorIngredient = {
       ...mockMain,
       _id: '643d69a5c3f7b9001cfa0943',
@@ -112,6 +106,24 @@ describe('burgerConstructor reducer', () => {
         ingredients: [mockConstructorMain, secondMain]
       },
       moveIngredient({ index: 1, direction: 'up' })
+    );
+
+    expect(state.ingredients).toEqual([secondMain, mockConstructorMain]);
+  });
+
+  test('должен обработать moveIngredient вниз', () => {
+    const secondMain: TConstructorIngredient = {
+      ...mockMain,
+      _id: '643d69a5c3f7b9001cfa0943',
+      id: 'second-id'
+    };
+
+    const state = reducer(
+      {
+        ...initialState,
+        ingredients: [mockConstructorMain, secondMain]
+      },
+      moveIngredient({ index: 0, direction: 'down' })
     );
 
     expect(state.ingredients).toEqual([secondMain, mockConstructorMain]);
